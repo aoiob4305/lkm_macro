@@ -7,9 +7,7 @@ from rtmidi.midiconstants import NOTE_OFF, NOTE_ON
 
 DEBUG = False
 
-INPORT = 0
-OUTPORT = 0
-
+# novation lunchkeymini data from http://
 row1 = (96, 97, 98, 99, 100, 101, 102, 103, 104)  # LED indices, first row
 row2 = (112, 113, 114, 115, 116, 117, 118, 119, 120)  # LED incides, second row
 leds = row1 + row2
@@ -72,4 +70,4 @@ class Launchpad(object):
         time.sleep(2)
         self.midiout.send_message([NOTE_ON, led_id, color_vel])
         time.sleep(2)
-        #self.midiout.send_message(control_mode_off)
+        self.midiout.send_message(control_mode_off)
