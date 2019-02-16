@@ -4,6 +4,7 @@ import sys
 import time
 from rtmidi.midiutil import open_midiinput, open_midioutput
 from rtmidi.midiconstants import NOTE_OFF, NOTE_ON
+from rtmidi import MidiIn, MidiOut
 
 DEBUG = False
 
@@ -16,7 +17,8 @@ control_mode_off = [NOTE_ON, 0x0C, 0x00]
 
 class Launchpad(object):
     def __init__(self):
-        pass
+        self.midiin = None
+        self.midiout = None
 
     def __del__(self):
         if self.midiin is not None:
@@ -30,6 +32,11 @@ class Launchpad(object):
             self.midiin, self.inport_name = open_midiinput(inport)
             self.midiout, self.outport_name = open_midioutput(outport)
             return True
+
+        except OSError:
+            print("there is no midi device")
+            sys.exit()
+            return False
 
         except (EOFError, KeyboardInterrupt):
             sys.exit()
@@ -46,6 +53,15 @@ class Launchpad(object):
             sys.exit()
             return False
 
+    def getDeviceList(self):
+        try:
+            print("now available input devices are: ")
+            print(MidiIn().get_ports())
+            print("now available output devices are: ")
+            print(MidiOut().get_ports())
+            return True
+        except:
+            return False
     def getMsg(self):
         try:
             timer = time.time()

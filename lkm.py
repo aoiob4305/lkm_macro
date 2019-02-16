@@ -13,8 +13,10 @@ settings.read("settings.ini")
 
 midiInPort = settings['midi']['midiInPort']
 midiOutPort = settings['midi']['midiOutPort']
+print("inport is {}, outport is {}".format(midiInPort, midiOutPort))
 
 lp = Launchpad()
+lp.getDeviceList()
 result = lp.connect(midiInPort, midiOutPort)
 
 if result is True:
@@ -23,10 +25,10 @@ if result is True:
         if msg:
             key = str(msg['message'][0]) + str(msg['message'][1])
             try:
-                command = settings['command'][key]
-                subprocess.Popen(command, creationflags=subprocess.DETACHED_PROCESS)
+                typeForAction, action = settings['command'][key].split(',')
+                #subprocess.Popen(action, creationflags=subprocess.DETACHED_PROCESS)
                 print("key is in settings.ini")
-                print("command is {}".format(command))
+                print("type is {}, command is {}".format(typeForAction, action))
             except KeyError:
                 print("key is not in settings.ini")
             
