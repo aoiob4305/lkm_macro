@@ -26,7 +26,7 @@ class Launchpad(object):
             self.midiin.cancel_callback()
         if self.midiout is not None:
             self.midiout.close_port()
-
+    
     def connect(self, inport, outport):
         try:
             self.midiin, self.inport_name = open_midiinput(inport)
@@ -54,14 +54,13 @@ class Launchpad(object):
             return False
 
     def getDeviceList(self):
+        midiin = MidiIn()
+        midiout = MidiOut()
         try:
-            print("now available input devices are: ")
-            print(MidiIn().get_ports())
-            print("now available output devices are: ")
-            print(MidiOut().get_ports())
-            return True
+            return (midiin.get_ports(), midiout.get_ports())
         except:
             return False
+
     def getMsg(self):
         try:
             timer = time.time()
