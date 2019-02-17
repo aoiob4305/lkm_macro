@@ -6,7 +6,7 @@ from rtmidi.midiutil import open_midiinput, open_midioutput
 from rtmidi.midiconstants import NOTE_OFF, NOTE_ON
 from rtmidi import MidiIn, MidiOut
 
-DEBUG = False
+DEBUG = True
 
 # novation lunchkeymini data from http://
 row1 = (96, 97, 98, 99, 100, 101, 102, 103, 104)  # LED indices, first row
@@ -58,7 +58,9 @@ class Launchpad(object):
         midiout = MidiOut()
         try:
             return (midiin.get_ports(), midiout.get_ports())
-        except:
+        except Exception as e:
+            if DEBUG == True:
+                print(e)
             return False
 
     def getMsg(self):
@@ -79,6 +81,16 @@ class Launchpad(object):
 
         except KeyboardInterrupt:
             self.__del__()
+    
+    def playNote(self, note, vel, timeval):
+        try:
+            self.midiout.send_message([NOTE_ON, note, vel])
+            time.sleep(timeval)
+            self.midiout.send_message([NOTE_OFF, note, 0])
+            return True
+        except Exception as e:
+            print(e)
+            return False
 
     def writeLed(self, led_id, color_vel):
         self.midiout.send_message(control_mode_on)
@@ -86,3 +98,4 @@ class Launchpad(object):
         self.midiout.send_message([NOTE_ON, led_id, color_vel])
         time.sleep(2)
         self.midiout.send_message(control_mode_off)
+        return True

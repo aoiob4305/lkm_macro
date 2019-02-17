@@ -4,6 +4,7 @@
 import sys
 import subprocess
 import configparser
+import winsound
 from time import sleep
 
 from launchpad import Launchpad
@@ -11,7 +12,7 @@ from winkeyevent import PressKey, ReleaseKey
 
 DEBUG = True
 
-typeForActionDefine = {"0" : "KEYIN", "1" : "EXEC", "2" : "CODE", "3" : "WAVE", "9": "SPECIAL"}
+ACTION_TYPE = {"0" : "KEYIN", "1" : "EXEC", "2" : "NOTE", "3" : "WAVE", "9": "SPECIAL"}
 
 settings = configparser.ConfigParser()
 settings.read("settings.ini")
@@ -41,23 +42,27 @@ if result is True:
 
                     if DEBUG is True:
                         print("key is in settings.ini")
-                        print("type is {}, key is [{}], command is {}".format(typeForActionDefine[typeForAction], key, action))
+                        print("type is {}, key is [{}], action is {}".format(ACTION_TYPE[typeForAction], key, action))
 
                     #윈도우 키입력 신호 발생
-                    if typeForActionDefine[typeForAction] == "KEYIN":
+                    if ACTION_TYPE[typeForAction] == "KEYIN":
                         PressKey(int(action, 0))
                         ReleaseKey(int(action, 0))
+
                     #지정된 명령어 실행
-                    elif typeForActionDefine[typeForAction] == "EXEC":
-                        process = subprocess.Popen(action, creationflags=subprocess.DETACHED_PROCESS)
-                    #계이름 연주?
-                    elif typeForActionDefine[typeForAction] == "CODE":
-                        pass
-                    #음성파일 연주?
-                    elif typeForActionDefine[typeForAction] == "WAVE":
-                        pass
+                    elif ACTION_TYPE[typeForAction] == "EXEC":
+                        subprocess.Popen(action, creationflags=subprocess.DETACHED_PROCESS)
+
+                    #노트 연주
+                    elif ACTION_TYPE[typeForAction] == "NOTE":
+                        lp.playNote(int(action, 0), 112, 0.1)
+
+                    #음성파일 연주
+                    elif ACTION_TYPE[typeForAction] == "WAVE":
+                        winsound.PlaySound(action, winsound.SND_FILENAME)
+
                     #현재 프로그램 기능으로 사용할 항목
-                    elif typeForActionDefine[typeForAction] == "SPECIAL":
+                    elif ACTION_TYPE[typeForAction] == "SPECIAL":
                         if key == "15336":
                             doloop = False
                             raise KeyboardInterrupt
